@@ -1,0 +1,5 @@
+,id,contract_address,name,asset_platform_id,symbol,created_at
+count,100,85,100,100,100,100
+unique,100,85,100,9,90,1
+top,autoglyphs,0xd4e4078ca3495de5b1d4db434bebc5a986197782,Autoglyphs,ethereum,ABS,20250330_014029
+freq,1,1,1,52,6,100

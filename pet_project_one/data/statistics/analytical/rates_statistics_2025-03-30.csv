@@ -1,0 +1,5 @@
+,rates,created_at
+count,75,75
+unique,75,1
+top,"{'name': 'Bitcoin', 'unit': 'BTC', 'value': 1.0, 'type': 'crypto'}",20250330_014029
+freq,1,75
