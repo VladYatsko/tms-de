@@ -1,4 +1,4 @@
-from typing import List, Generator
+from typing import List, Generator, Dict
 from random import choice
 import psycopg2
 from psycopg2 import extras
@@ -18,71 +18,27 @@ def get_connection() -> psycopg2.connect:
     )
 
 
-def get_statuses() -> List[str]:
+def update_flights_status(updates: List[Dict[str, object]]) -> None:
     """
-    Current function collects the list of statuses.
-    :return: list of statuses.
+    Batch update of flight statuses.
+    :param updates: List of dicts with 'flight_id' and 'new_status'.
+    :return: None
     """
-    connection = get_connection()
-    cursor = connection.cursor()
-
     query = """
-        select distinct status
-        from bookings.flights;
+        UPDATE bookings.flights
+        SET status = %s
+        WHERE flight_id = %s
     """
 
-    cursor.execute(query)
+    data = [(item['new_status'], item['flight_id']) for item in updates]
 
-    list_of_statuses = [str(status[0]) for status in cursor.fetchall()]
-
-    cursor.close()
-    connection.close()
-
-    return list_of_statuses
-
-
-def get_size() -> int:
-    connection = get_connection()
-    cursor = connection.cursor()
-
-    query = """
-            select count(*)
-            from bookings.flights;
-        """
-
-    cursor.execute(query)
-    result = cursor.fetchone()
-
-    cursor.close()
-    connection.close()
-
-    return result[0]
-
-
-def status_generator(statuses: List[str], size: int) -> Generator:
-    for flight_id in range(1, size + 1):
-        yield choice(statuses), flight_id
-
-
-def update_statuses() -> None:
-    """
-    Current function updates the statuses in the table.
-    :return:
-    """
     with get_connection() as connection:
         with connection.cursor() as cursor:
-            query = """
-                UPDATE bookings.flights
-                SET status = %s
-                WHERE flight_id = %s
-            """
-
             try:
-                extras.execute_batch(cursor, query, status_generator(get_statuses(), get_size()))
-
+                extras.execute_batch(cursor, query, data)
                 connection.commit()
 
-                print(f'Update process is completed for {get_size()} records.')
+                print(f"{cursor.rowcount} flight status(es) updated.")
             except psycopg2.ProgrammingError:
                 print('Pay attention to syntax or missing table or incorrect number of attributes')
             except IndexError:
@@ -96,4 +52,8 @@ def update_statuses() -> None:
 
 
 if __name__ == '__main__':
-    update_statuses()
+    updates = [
+        {"flight_id": 123, "new_status": "Cancelled"},
+        {"flight_id": 456, "new_status": "Delayed"}
+    ]
+    update_flights_status(updates)
