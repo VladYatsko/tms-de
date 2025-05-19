@@ -1,0 +1,47 @@
+Задача 5
+У вас есть следующее описание системы управления библиотекой:
+- Каждый читатель может взять несколько книг
+- У каждой книги есть авторы (может быть несколько).
+- Для каждого выданного экземпляра книги указывается дата выдачи и возврата.
+Задание:
+- Создайте ER-диаграмму или текстовое описание модели.
+- Приведите таблицы к 3НФ .
+- Объясните, какие аномалии могли бы возникнуть при отсутствии нормализации.
+
+
+таблицы:
+readers:
+reader_id PK
+reader_name
+contact_info
+
+authors:
+author_id PK
+full_name
+
+books:
+book_id PK
+title
+year_published
+
+book_authors:
+id PK
+book_id FK
+author_id FK
+
+book_copies:
+copy_id PK
+book_id FK
+inventory_number
+
+loans:
+loan_id PK
+copy_id FK
+reader_id FK
+loan_date
+return_date
+
+
+
+Недостатки описаны в задаче 6, чтобы не дублировать.
+
